@@ -4,6 +4,6 @@
     "compilerOptions": {
         "include": ["./docs.ts", "src/**/*.ts"]
     },
-    "out": "./docs",
+    "out": "../docs/framework",
     "excludePrivate": true
 }

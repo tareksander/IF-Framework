@@ -21,6 +21,10 @@ A modular framework for developing interactive fiction with modern [Typescript](
 - [ ] Parser games: If I find the time and motivation to learn about & make them.
 
 
+## Tutorial
+
+For a commented example, see the [example project](https://github.com/tareksander/IF-Framework/tree/main/example).
+
 
 ## Concepts
 

@@ -1,4 +1,5 @@
 <script lang="ts" context="module">
+    // These module exports are required for passages, even if they're empty.
     export const meta = {};
     export const tags = [];
 </script>

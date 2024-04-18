@@ -27,6 +27,8 @@ let init = () => {
     engine.addPassages(passages);
     
     // Set the starting point with an initial history.
+    // This creates a new History with the current Moment at index 0 and a Moment list with only
+    // one Moment at the "test" passage and with empty local variables.
     engine.initHistory(new History([new Moment("test", {})], 0));
     
     
@@ -48,6 +50,7 @@ let init = () => {
         }
     });
     
+    // Only use the service worker in release builds, to make testing easier.
     if (! DEBUG) {
         updater.register().catch((e) => console.log(e));
     }

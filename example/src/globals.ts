@@ -1,5 +1,6 @@
 import { engine } from "@if-framework/framework/choice";
 
+// Interface for type safety of the engine's global variables.
 export interface Globals {
     value: string;
 };

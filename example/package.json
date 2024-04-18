@@ -2,7 +2,10 @@
   "name": "example",
   "version": "1.0.0",
   "description": "",
-  "scripts": {},
+  "scripts": {
+    "serve": "webpack serve",
+    "build": "webpack build --env release"
+  },
   "author": "",
   "license": "ISC",
   "devDependencies": {
