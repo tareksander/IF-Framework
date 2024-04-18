@@ -9,7 +9,7 @@ const path = require('path');
 const _ = require("lodash");
 
 
-const title = "Example";
+const title = "Cloak of Darkness";
 
 const presets = ["@babel/preset-typescript", ["@babel/preset-env", { targets: "last 2 years and not dead"}]];
 
@@ -161,6 +161,7 @@ module.exports = (env) => {
             new CopyPlugin({
                 patterns: [
                     "icon-256x256.png",
+                    "image.png",
                     {
                         from: path.resolve('node_modules', '@if-framework/framework/fonts/Sedan-Italic.ttf'),
                         to: "fonts/",

@@ -1,0 +1,10 @@
+{
+    "name": "Cloak of Darkness",
+    "description": "Example IFF app",
+    "background-color": "black",
+    "categories": ["books", "games"],
+    "display": "standalone",
+    "icons": [
+        { "sizes": "256x256", "src": "icon-256x256.png"}
+    ]
+}

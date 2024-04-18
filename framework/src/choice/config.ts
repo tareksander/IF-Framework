@@ -1,3 +1,4 @@
+import { Writable, writable } from "svelte/store";
 import { Passage } from "./engine";
 
 /**
@@ -42,6 +43,10 @@ export class Config {
      */
     public historyLimit = 50;
     
+    /**
+     * Determines if the user can navigate the history.
+     */
+    public userNavigable: Writable<boolean> = writable(true);
     
     private constructor() {}
     

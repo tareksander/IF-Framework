@@ -1,25 +1,48 @@
 
-@font-face {
-    font-family: "Playfair Display";
-    font-style: italic;
-    font-weight: 400 900;
-    font-display: block;
-    src: url(./fonts/PlayfairDisplay-Italic-VariableFont_wght.ttf);
+$font: "Sedan" !default;
+
+
+@if $font == "Playfair Display" {
+    
+    @font-face {
+        font-family: "Playfair Display";
+        font-style: italic;
+        font-weight: 400 900;
+        font-display: block;
+        src: url(./fonts/PlayfairDisplay-Italic-VariableFont_wght.ttf);
+    }
+    
+    @font-face {
+        font-family: "Playfair Display";
+        font-style: normal;
+        font-weight: 400 900;
+        font-display: block;
+        src: url(./fonts/PlayfairDisplay-VariableFont_wght.ttf);
+    }
 }
 
-@font-face {
-    font-family: "Playfair Display";
-    font-style: normal;
-    font-weight: 400 900;
-    font-display: block;
-    src: url(./fonts/PlayfairDisplay-VariableFont_wght.ttf);
+@if $font == "Sedan" {
+    @font-face {
+        font-family: "Sedan";
+        font-style: italic;
+        font-weight: 400 900;
+        font-display: block;
+        src: url(./fonts/Sedan-Italic.ttf);
+    }
+    
+    @font-face {
+        font-family: "Sedan";
+        font-style: normal;
+        font-weight: 400 900;
+        font-display: block;
+        src: url(./fonts/Sedan-Regular.ttf);
+    }
 }
 
 
 html {
-    font-family: "Playfair Display", serif;
+    font-family: $font;
     font-optical-sizing: auto;
-    font-weight: normal;
     font-style: normal;
 }
 

@@ -1,6 +1,6 @@
 import { derived, get, readable, Readable, writable, Writable } from 'svelte/store';
 import { config } from './config';
-import { deserialize, saveManager, serialize } from './save';
+import { deserialize, Save, saveManager, serialize } from './save';
 import { SaveDB } from './savedb';
 import { applyTheme, loadTheme, saveTheme, Theme } from "../common/theme";
 
@@ -162,16 +162,24 @@ export class Engine {
                 return this.globals;
             },
             onLoad: (data) => {
-                for (let k of Object.keys(this.globals)) {
-                    // @ts-ignore
-                    delete this.globals[k];
-                }
+                this.deleteGlobals();
                 for (let [k, v] of Object.entries(data)) {
                     // @ts-ignore
                     this.globals[k] = v;
                 }
             },
         });
+    }
+    
+    
+    /**
+     * Clears all global variables.
+     */
+    private deleteGlobals() {
+        for (let k of Object.keys(this.globals)) {
+            // @ts-ignore
+            delete this.globals[k];
+        }
     }
     
     /**
@@ -206,6 +214,24 @@ export class Engine {
                     sessionStorage.removeItem(this.staticTitle + " save");
                 }
             }
+        }
+    }
+    
+    /**
+     * Loads directly from a safe or from a Promise for a safe.
+     * Sets the loading state during load, so the UI can know it should not modify the engine state while it loads.
+     */
+    public loadSave(s: Save | Promise<Save>) {
+        this.loading.set(true);
+        if (s instanceof Promise) {
+            s.then((s) => {
+                saveManager.loadData(s.data);
+            }).catch((e) => console.log("Error while loading: %o", e)).finally(() => {
+                this.loading.set(false);
+            });
+        } else {
+            saveManager.loadData(s.data);
+            this.loading.set(false);
         }
     }
     

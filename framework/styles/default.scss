@@ -17,3 +17,12 @@ html, body {
     height: 100%;
     margin: 0px;
 }
+
+button {
+    appearance: none;
+	color: inherit;
+	background-color: var(--ui-secondary-color);
+	border-style: outset;
+    font-family: inherit;
+}
+

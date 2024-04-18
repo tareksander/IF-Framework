@@ -1,26 +1,18 @@
 import "./styles.scss";
 
-import { History, Main, SaveDialog, Theme, define, overlays, updater } from "@if-framework/framework/choice";
+import { History, Main, SaveDialog, Theme, config, define, overlays, updater } from "@if-framework/framework/choice";
 import { Moment, engine } from "@if-framework/framework/choice";
 // Generated from the passages directory by the Webpack plugin
 import passages from "./passages";
 import { DEBUG } from "./env";
+import Header from "./header.svelte";
+import Restart from "./restart.svelte";
 
-// The theme should be set before loading the rest of the document, to prevent a flash of unstyled content.
-/*
-let theme: Theme = engine.loadTheme() ?? {
-    background: "black",
-    link: "black",
-    linkVisited: "black",
-    text: "black",
-    uiPrimary: "black",
-    uiSecondary: "black",
-};
-
-engine.applyTheme(theme);
-*/
 
 let init = () => {
+    config.historyLimit = 2;
+    config.userNavigable.set(false);
+    
     // Add the generated passages to the engine.
     // For generated passages, the passage name is the file name without the extension.
     engine.addPassages(passages);
@@ -28,7 +20,7 @@ let init = () => {
     // Set the starting point with an initial history.
     // This creates a new History with the current Moment at index 0 and a Moment list with only
     // one Moment at the "test" passage and with empty local variables.
-    engine.initHistory(new History([new Moment("test", {})], 0));
+    engine.initHistory(new History([new Moment("start", {})], 0));
     
     
     // Define the custom elements used in Markdown passages.
@@ -42,9 +34,9 @@ let init = () => {
         target: document.body,
         props: {
             // Additional components to be displayed in the sidebar can be added here. A Svelte component constructor is expected.
-            sidebarComponents: [],
+            sidebarComponents: [Restart],
             // Header and footer components can be added, too.
-            header: null,
+            header: Header,
             footer: null,
         }
     });
