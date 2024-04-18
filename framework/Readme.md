@@ -3,6 +3,8 @@
 A modular framework for developing interactive fiction with modern [Typescript](https://www.typescriptlang.org/) and [Svelte](https://svelte.dev/).
 
 
+[Documentation for the Typescript files of the main package](https://tareksander.github.io/IF-Framework/framework/index.html).
+
 
 ## Roadmap
 
