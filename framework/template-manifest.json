@@ -1,0 +1,10 @@
+{
+    "name": "<%= name %>",
+    "description": "<%= description %>",
+    "background-color": "<%= background %>",
+    "categories": ["books", "games"],
+    "display": "standalone",
+    "icons": [
+        <% for (let icon of icons) { print(`{ "sizes": "${icon.size}", "src": "${icon.href}"}`) } %>
+    ]
+}

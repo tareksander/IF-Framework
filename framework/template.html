@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <% for (let icon of icons) { print(`<link rel="icon" sizes="${icon.size}" href="${icon.href}"/><link rel="apple-touch-icon" sizes="${icon.size}" href="${icon.href}"/>`) } %>
+    <% if (manifest) { print(`<link rel="manifest" href="${manifest}"/>`) } %>
+    <title><%- title %></title>
+  </head>
+  <body>
+      <div id="iff-noscript-container" style="display: flex; position: absolute; align-items: center; width: 100%; height: 100%;">
+        <noscript style="width: 100%; text-align: center; font-size: xx-large;">
+            Please enable Javascript to view this story
+        </noscript>
+    </div>
+  </body>
+</html>

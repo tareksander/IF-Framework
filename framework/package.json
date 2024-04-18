@@ -1,0 +1,42 @@
+{
+  "name": "@if-framework/framework",
+  "version": "0.1.0",
+  "description": "A modular framework for developing interactive fiction with modern Typescript.",
+  "author": "Tarek Sander <tsanderdev@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "docs": ""
+  },
+  "dependencies": {
+    "svelte": "^4.2.12",
+    "dexie": "^4.0.1-beta.11"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.9",
+    "@babel/preset-typescript": "^7.23.3",
+    "babel-loader": "^9.1.3",
+    "css-loader": "^6.10.0",
+    "lodash": "^4.17.21",
+    "marked": "^12.0.1",
+    "sass": "^1.71.1",
+    "sass-loader": "^14.1.1",
+    "style-loader": "^3.3.4",
+    "svelte-loader": "^3.2.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
+    "webpack": "^5.90.3",
+    "webpack-cli": "^5.1.4"
+  },
+  "files": [
+    "src/",
+    "styles/",
+    "fonts/",
+    "template.html",
+    "template-manifest.json",
+    "choice.ts",
+    "core.ts",
+    "choice-plugin.js",
+    "choice-loader.js",
+    "iffMDReplacer.js"
+  ]
+}

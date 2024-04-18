@@ -1,0 +1,9 @@
+{
+    "$schema": "https://typedoc.org/schema.json",
+    "entryPoints": ["./docs.ts"],
+    "compilerOptions": {
+        "include": ["./docs.ts", "src/**/*.ts"]
+    },
+    "out": "./docs",
+    "excludePrivate": true
+}
