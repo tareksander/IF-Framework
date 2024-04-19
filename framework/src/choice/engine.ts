@@ -128,6 +128,11 @@ export class Engine {
     public readonly globals = {};
     
     /**
+     * Holds the set of all passages visited in the current save.
+     */
+    public readonly visitedPassages: Writable<string[]> = writable([]);
+    
+    /**
      * The story title as extracted from the \<title\> element.
      * Can be changed by the story itself after loading to change the displayed title at runtime.
      */
@@ -162,6 +167,15 @@ export class Engine {
             },
         });
         saveManager.callbacks.push({
+            tag: "visited",
+            onSave: () => {
+                return get(this.visitedPassages);
+            },
+            onLoad: (data) => {
+                this.visitedPassages.set(data as string[] ?? []);
+            },
+        });
+        saveManager.callbacks.push({
             tag: "globals",
             onSave: () => {
                 return this.globals;
@@ -181,6 +195,9 @@ export class Engine {
      */
     public async reset() {
         this.loading.set(true);
+        let url = new URL(window.location.toString());
+        url.hash = "";
+        history.replaceState(null, "", url.toString());
         this.history.set(structuredClone(this.initialHistory!));
         this.deleteGlobals();
         if (this.onReset) {
@@ -267,6 +284,14 @@ export class Engine {
      */
     public initHistory(h: History) {
         this.initialHistory = structuredClone(h);
+        this.history.subscribe((h) => {
+            if (h.currentIndex >= h.moments.length) return;
+            let p = h.moments[h.currentIndex].passage;
+            let v = get(this.visitedPassages);
+            if (! v.includes(p)) {
+                this.visitedPassages.set([...v, p]);
+            }
+        });
         if (config.sessionSave) {
             try {
                 let json = sessionStorage.getItem(this.staticTitle + " save");

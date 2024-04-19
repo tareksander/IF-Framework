@@ -13,6 +13,13 @@ export class Config {
     
     
     /**
+     * Determines how links are colored as visited:
+     * - "browser": Sets the hash of the URL so the browser can flag links as visited.
+     * - "save": Use the list of visited passages in the save to color links.
+     */
+    public visitedLinks: "browser" | "save" = "save";
+    
+    /**
      * Controls whether the save UI is available to the player.
      */
     public userSavable = writable(true);
