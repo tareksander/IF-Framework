@@ -4,6 +4,8 @@
     export let visited: boolean|undefined;
     
     let click = (e: Event) => {
+        e.preventDefault();
+        history.replaceState(null, "", href())
         engine.goTo(engine.passage(passage)!);
     };
     
