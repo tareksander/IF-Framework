@@ -16,7 +16,5 @@ export { default as SaveDialog } from "./src/choice/ui/saveDialog.svelte";
 export { default as Link } from "./src/choice/elements/link.svelte";
 
 // @ts-ignore
-export { userSavable } from "./src/choice/ui/sidebar.svelte";
-// @ts-ignore
 export { overlays } from "./src/choice/ui/main.svelte";
 

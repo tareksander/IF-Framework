@@ -43,6 +43,13 @@ module.exports = (env) => {
                             }),
                             compilerOptions: {
                                 customElement: true
+                            },
+                            // Ignore a11y warnings, they only clutter the output and should be visible in the editor anyways.
+                            onwarn: (w, warn) => {
+                                if (w.code.includes("a11y") !== undefined) {
+                                    return;
+                                }
+                                warn(w);
                             }
                         }
                     }

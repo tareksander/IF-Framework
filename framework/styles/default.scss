@@ -26,3 +26,14 @@ button {
     font-family: inherit;
 }
 
+* {
+    box-sizing: border-box;
+}
+
+a {
+    color: var(--link-color);
+}
+
+a:visited {
+    color: var(--link-visited-color);
+}

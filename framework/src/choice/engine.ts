@@ -97,7 +97,12 @@ export class Engine {
      * history list for the current {@link Moment}.
      */
     public readonly history = writable(new History([], 0));
+    private initialHistory: History|undefined;
     
+    /**
+     * Callbacks to be called on engine reset.
+     */
+    public onReset: (() => any)[] = [];
     
     /**
      * Tracks the current {@link Passage}.
@@ -171,14 +176,34 @@ export class Engine {
         });
     }
     
+    /**
+     * Deletes all global variables, resets the history and calls reset callbacks.
+     */
+    public async reset() {
+        this.loading.set(true);
+        this.history.set(structuredClone(this.initialHistory!));
+        this.deleteGlobals();
+        if (this.onReset) {
+            for (let r of this.onReset) {
+                try {
+                    r();
+                } catch (e) {
+                    console.log("Error in onReset: %o", e);
+                }
+            }
+        }
+        this.loading.set(false);
+    }
+    
     
     /**
      * Clears all global variables.
      */
     private deleteGlobals() {
+        let g = this.globals;
         for (let k of Object.keys(this.globals)) {
             // @ts-ignore
-            delete this.globals[k];
+            delete g[k];
         }
     }
     
@@ -241,6 +266,7 @@ export class Engine {
      * Initiates an autoload if autoload is enabled and no session history is found.
      */
     public initHistory(h: History) {
+        this.initialHistory = structuredClone(h);
         if (config.sessionSave) {
             try {
                 let json = sessionStorage.getItem(this.staticTitle + " save");

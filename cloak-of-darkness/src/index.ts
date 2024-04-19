@@ -1,12 +1,11 @@
 import "./styles.scss";
 
-import { History, Main, SaveDialog, Theme, config, define, overlays, updater } from "@if-framework/framework/choice";
+import { History, Main, config, define, updater } from "@if-framework/framework/choice";
 import { Moment, engine } from "@if-framework/framework/choice";
 // Generated from the passages directory by the Webpack plugin
 import passages from "./passages";
 import { DEBUG } from "./env";
 import Header from "./header.svelte";
-import Restart from "./restart.svelte";
 
 
 let init = () => {
@@ -34,7 +33,7 @@ let init = () => {
         target: document.body,
         props: {
             // Additional components to be displayed in the sidebar can be added here. A Svelte component constructor is expected.
-            sidebarComponents: [Restart],
+            sidebarComponents: [],
             // Header and footer components can be added, too.
             header: Header,
             footer: null,

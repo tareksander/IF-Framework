@@ -41,7 +41,7 @@ If you're coming from a Web developer perspective, the history system is essenti
 
 #### Service Worker
 
-A simple service worker template is included in the `service.ts` module. It works together with hte `Updater` to check for story updates and provides offline capability.  
+A simple service worker template is included in the `service.ts` module. It works together with the `Updater` to check for story updates and provides offline capability.  
 For that to work you have to include a `config.json` file in the directory of the output HTML file, as well as the `service.js` file built from the service.  
 The `version` field is a number and should start at 0. Each time you make a new release, you'll have to increment it to make the service worker pick up on the update.  
 The `cacheFiles` field contains the paths of files to cache relative to the `config.json`. You have to add all your build outputs, so they'll be available offline.

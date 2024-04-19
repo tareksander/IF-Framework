@@ -30,7 +30,6 @@ let init = () => {
     // one Moment at the "test" passage and with empty local variables.
     engine.initHistory(new History([new Moment("test", {})], 0));
     
-    
     // Define the custom elements used in Markdown passages.
     define();
     

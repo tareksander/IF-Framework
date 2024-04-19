@@ -13,6 +13,13 @@ const title = "Example";
 
 const presets = ["@babel/preset-typescript", ["@babel/preset-env", { targets: "last 2 years and not dead"}]];
 
+const babelLoader = {
+    loader: 'babel-loader',
+    options: {
+        presets: presets
+    }
+};
+
 module.exports = (env) => {
     let release = env.release ?? false;
     let debugRelease = env.debugRelease ?? false;
@@ -28,12 +35,7 @@ module.exports = (env) => {
             {
                 test: /\.svelte$/,
                 use: [
-                    {
-                        loader: 'babel-loader',
-                        options: {
-                            presets: presets
-                        }
-                    },
+                    babelLoader,
                     {
                         loader: 'svelte-loader',
                         options: {
@@ -42,7 +44,14 @@ module.exports = (env) => {
                                 
                             }),
                             compilerOptions: {
-                                customElement: true
+                                customElement: true,
+                            },
+                            // Ignore a11y warnings, they only clutter the output and should be visible in the editor anyways.
+                            onwarn: (w, warn) => {
+                                if (w.code.includes("a11y") !== undefined) {
+                                    return;
+                                }
+                                warn(w);
                             }
                         }
                     }
@@ -57,22 +66,12 @@ module.exports = (env) => {
             },
             {
                 test: /\.tsx?$/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: presets
-                    }
-                },
+                use: babelLoader,
             },
             {
                 test: /passages\/[^\/]*.md$/i,
                 use: [
-                    {
-                        loader: 'babel-loader',
-                        options: {
-                            presets: presets
-                        }
-                    },
+                    babelLoader,
                     'svelte-loader',
                     ChoicePlugin.loader
                 ],

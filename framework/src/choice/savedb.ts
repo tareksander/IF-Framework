@@ -5,7 +5,9 @@ export class SaveDB extends Dexie {
     public saves!: Table<Save>;
     
     public constructor(name: string) {
-        super(name);
+        super(name, {
+            cache: "disabled"
+        });
         this.version(1).stores({
             saves: "slot, name, date"
         });
@@ -19,7 +21,7 @@ export class SaveDB extends Dexie {
      * Gets all saves.
      */
     public getSaves() {
-        return this.saves.toArray();
+        return this.saves.orderBy("slot").toArray();
     }
     
     /**

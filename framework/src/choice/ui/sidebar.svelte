@@ -1,13 +1,9 @@
-<script lang="ts" context="module">
-    /**
-     * Controls whether the save UI is available to the player.
-     */
-    export const userSavable = writable(true);
-</script>
 <script lang="ts">
-    import { derived, get, writable } from "svelte/store";
+    import { derived, get } from "svelte/store";
     import { engine } from "../engine";
     import { config } from "../config";
+    import SaveDialog from "./saveDialog.svelte";
+    import { overlays } from "./main.svelte";
     export let components: any[];
     
     let backColor = derived([engine.history, config.userNavigable], ([h, n]) => (h.currentIndex >= h.moments.length - 1 || ! n) ? "var(--ui-secondary-color)" : "var(--ui-primary-color)");
@@ -31,6 +27,20 @@
     
     let title = engine.title;
     
+    function reset() {
+        engine.reset();
+    }
+    
+    let us = config.userSavable;
+    
+    function saveDialog() {
+        if (get(us)) {
+            if (! get(overlays).find((o) => o.component === SaveDialog)) {
+                overlays.set([...get(overlays), { component: SaveDialog, dismissible: true}]);
+            }
+        }
+    }
+    
 </script>
 
 <div style="border-right: 2px solid var(--ui-primary-color); height: 100%">
@@ -38,17 +48,29 @@
         {$title}
     </h2>
     <div>
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <!-- svelte-ignore a11y-missing-attribute -->
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <a on:click={back} style="border: 2px solid {$backColor}; border-right: 1px solid {$backColor}; border-top: 1px solid {$backColor}; color: {$backColor}">←</a><!-- svelte-ignore a11y-missing-attribute --><!-- svelte-ignore a11y-click-events-have-key-events --><!-- svelte-ignore a11y-no-static-element-interactions --><a on:click={forward} style="border: 2px solid {$forwardColor}; border-left: 1px solid {$forwardColor}; border-top: 1px solid {$forwardColor}; color: {$forwardColor}">→</a>
+        <a on:click={back} style="border: 2px solid {$backColor}; border-right-width: 1px}; border-top-width: 1px; color: {$backColor}">←</a><a on:click={forward} style="border: 2px solid {$forwardColor}; border-left-width: 1px; border-top-width: 1px; color: {$forwardColor}">→</a>
     </div>
+    <a class="button {$us ? "" : "disabled"}" on:click={saveDialog}>Save/Load</a>
     {#each components as c}
         <svelte:component this={c}/>
     {/each}
+    <a class="button" on:click={reset}>Reset</a>
 </div>
 
 <style lang="css">
+    .button {
+        display: block;
+        color: inherit;
+        border: 2px solid var(--ui-primary-color);
+        border-right-width: 0px;
+        border-top-width: 1px;
+    }
+    
+    .disabled {
+        border-color: var(--ui-secondary-color);
+        color: var(--ui-secondary-color);
+    }
+    
     a {
         padding: 0.5em;
         align-content: center;

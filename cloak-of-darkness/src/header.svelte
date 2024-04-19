@@ -1,5 +1,17 @@
 <script lang="ts">
+    import { engine } from "@if-framework/framework/choice";
     import { globals } from "./globals";
+    import { onMount } from "svelte";
+    
+    onMount(() => {
+        let reset = () => {
+            room = globals().room;
+        };
+        engine.onReset.push(reset);
+        return () => {
+            engine.onReset = engine.onReset.filter((v) => v != reset);
+        };
+    });
     
     let room = globals().room;
 </script>

@@ -11,6 +11,12 @@ export class Config {
      */
     static config: Config = new Config();
     
+    
+    /**
+     * Controls whether the save UI is available to the player.
+     */
+    public userSavable = writable(true);
+    
     /**
      * Set to use a custom component to signal story updates.
      * The string is included as raw HTML.
