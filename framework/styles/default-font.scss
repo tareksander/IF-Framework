@@ -1,8 +1,9 @@
+@use 'sass:list';
 
-$font: "Sedan" !default;
+$fonts: "Sedan" !default;
 
 
-@if $font == "Playfair Display" {
+@if list.index($fonts, "Playfair Display") {
     
     @font-face {
         font-family: "Playfair Display";
@@ -21,7 +22,7 @@ $font: "Sedan" !default;
     }
 }
 
-@if $font == "Sedan" {
+@if list.index($fonts, "Sedan") {
     @font-face {
         font-family: "Sedan";
         font-style: italic;
@@ -39,9 +40,43 @@ $font: "Sedan" !default;
     }
 }
 
+@if list.index($fonts, "Courier Prime") {
+    @font-face {
+        font-family: "Courier Prime";
+        font-style: normal;
+        font-weight: 400;
+        font-display: block;
+        src: url(./fonts/CourierPrime-Regular.ttf);
+    }
+    
+    @font-face {
+        font-family: "Courier Prime";
+        font-style: normal;
+        font-weight: 700;
+        font-display: block;
+        src: url(./fonts/CourierPrime-Bold.ttf);
+    }
+    
+    @font-face {
+        font-family: "Courier Prime";
+        font-style: italic;
+        font-weight: 400;
+        font-display: block;
+        src: url(./fonts/CourierPrime-BoldItalic.ttf);
+    }
+    
+    @font-face {
+        font-family: "Courier Prime";
+        font-style: italic;
+        font-weight: 700;
+        font-display: block;
+        src: url(./fonts/.ttf);
+    }
+}
+
 
 html {
-    font-family: $font;
+    font-family: list.nth($fonts, 1);
     font-optical-sizing: auto;
     font-style: normal;
 }

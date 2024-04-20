@@ -1,5 +1,6 @@
 @use "@if-framework/framework/styles/default.scss";
 
 @use "@if-framework/framework/styles/default-font.scss" with (
-    $font: "Sedan"
+    // Accepts a list of fonts. The first one is set as the default font.
+    $fonts: "Sedan"
 );

@@ -12,13 +12,14 @@ A modular framework for developing interactive fiction with modern [Typescript](
   - [x] Default UI with a closable sidebar and custom sidebar elements, headers and footers.
   - [x] Passage generator from Markdown files.
   - [x] Passage aggregator, collecting all passages from a folder for easy adding to the engine.
-  - [ ] Save/Load UI
-  - [ ] Yeoman project template
+  - [x] Save/Load UI
+  - [x] [Project template](https://github.com/tareksander/IF-Framework-Template/tree/main)
 - [ ] Common Functionality
   - [x] Installable as PWAs
   - [x] Offline capable
   - [x] Extensible save system
   - [x] Update notifications
+  - [ ] Audio system
   - [ ] Packaging as a native app via Tauri
 - [ ] Parser games: If I find the time and motivation to learn about & make them.
 
