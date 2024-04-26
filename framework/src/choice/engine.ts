@@ -1,8 +1,9 @@
 import { derived, get, readable, Readable, writable, Writable } from 'svelte/store';
 import { config } from './config';
-import { deserialize, Save, saveManager, serialize } from './save';
-import { SaveDB } from './savedb';
+import { deserialize, Save, saveManager, serialize } from '../common/save';
+import { SaveDB } from '../common/savedb';
 import { applyTheme, loadTheme, saveTheme, Theme } from "../common/theme";
+import { RNG } from '../common/rand';
 
 /**
  * Represents a passage/screen of the story.
@@ -139,6 +140,8 @@ export class Engine {
     public readonly title: Writable<string>;
     private readonly staticTitle: string;
     
+    private version: number = 0;
+    
     private constructor() {
         this.title = writable(document.title);
         this.staticTitle = document.title;
@@ -156,6 +159,10 @@ export class Engine {
         saveManager.deserializeHooks.set("iff.engine.Moment", (data) => {
             let d = data as Moment;
             return new Moment(d.passage, d.locals);
+        });
+        saveManager.serializeHooks.set(RNG.prototype, ["iff.rand.RNG", (o: any) => o.serialize()]);
+        saveManager.deserializeHooks.set("iff.rand.RNG", (data) => {
+            return RNG.deserialize(data as string);
         });
         saveManager.callbacks.push({
             tag: "history",
@@ -191,15 +198,27 @@ export class Engine {
     }
     
     /**
+     * Gets the configured savegame version number.
+     */
+    public get saveVersion() {
+        return this.version;
+    }
+    
+    /**
      * Deletes all global variables, resets the history and calls reset callbacks.
      */
     public async reset() {
+        if (! this.initialHistory) return;
         this.loading.set(true);
-        let url = new URL(window.location.toString());
-        url.hash = "";
-        history.replaceState(null, "", url.toString());
+        if (config.visitedLinks == "browser") {
+            let url = new URL(window.location.toString());
+            url.hash = "";
+            history.replaceState(null, "", url.toString());
+        }
         this.history.set(structuredClone(this.initialHistory!));
         this.deleteGlobals();
+        this.visitedPassages.set([]);
+        sessionStorage.removeItem(this.staticTitle + " save");
         if (this.onReset) {
             for (let r of this.onReset) {
                 try {
@@ -209,6 +228,9 @@ export class Engine {
                 }
             }
         }
+        await new Promise((r) => {
+            setTimeout(r, 200);
+        });
         this.loading.set(false);
     }
     
@@ -254,6 +276,8 @@ export class Engine {
                 if (error instanceof DOMException && error.code == DOMException.QUOTA_EXCEEDED_ERR) {
                     // If the quota is exceeded, remove again, so no old history is loaded again.
                     sessionStorage.removeItem(this.staticTitle + " save");
+                } else {
+                    console.log("Error while saving to session storage: %o", error);
                 }
             }
         }
@@ -262,27 +286,44 @@ export class Engine {
     /**
      * Loads directly from a safe or from a Promise for a safe.
      * Sets the loading state during load, so the UI can know it should not modify the engine state while it loads.
+     * The Promise resolves as false if the save could not be loaded.
      */
-    public loadSave(s: Save | Promise<Save>) {
+    public async loadSave(s: Save | Promise<Save>): Promise<boolean> {
         this.loading.set(true);
         if (s instanceof Promise) {
-            s.then((s) => {
-                saveManager.loadData(s.data);
-            }).catch((e) => console.log("Error while loading: %o", e)).finally(() => {
+            try {
+                let save = await s;
+                if (save.version !== this.version) return false;
+                saveManager.loadData(save.data);
+            } catch (e) {
+                console.log("Error while loading: %o", e);
+            } finally {
+                await new Promise((r) => {
+                    setTimeout(r, 200);
+                });
                 this.loading.set(false);
-            });
+            }
         } else {
+            if (s.version !== this.version) return false;
             saveManager.loadData(s.data);
+            await new Promise((r) => {
+                setTimeout(r, 200);
+            });
             this.loading.set(false);
         }
+        return true;
     }
     
     
     /**
      * Sets the initial {@link History} if no history could be found in session storage.
      * Initiates an autoload if autoload is enabled and no session history is found.
+     * 
+     * @param h The initial {@link History}
+     * @param version The save version. Saves with a differing version will be rejected. See {@link Save.version} for more information
      */
-    public initHistory(h: History) {
+    public init(h: History, version: number) {
+        this.version = version;
         this.initialHistory = structuredClone(h);
         this.history.subscribe((h) => {
             if (h.currentIndex >= h.moments.length) return;

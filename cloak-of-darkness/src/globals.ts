@@ -8,7 +8,9 @@ export interface Globals {
     lastRoom: string;
 };
 
-// Simple function to initialize the globals and cast them to the Globals interface.
+/**
+ * Simple function to initialize the globals and cast them to the Globals interface.
+ */
 export function globals() {
     let g = engine.globals as Globals;
     g.hasCloak ??= true;
@@ -17,6 +19,9 @@ export function globals() {
     return g;
 }
 
+/**
+ * Sets the room to a new value and the last room the the current value.
+ */
 export function room(r: string) {
     let g = globals();
     g.lastRoom = get(g.room);

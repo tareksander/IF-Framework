@@ -1,11 +1,12 @@
 {
-    "version": 1,
+    "version": 3,
     "cacheFiles": [
         "index.html",
         "index.js",
         "index.css",
         "icon-256x256.png",
-        "fonts/Sedan-Italic.ttf.ttf",
-        "fonts/Sedan-Regular.ttf.ttf"
-    ]
+        "fonts/Sedan-Italic.ttf",
+        "fonts/Sedan-Regular.ttf"
+    ],
+    "isolated": false
 }

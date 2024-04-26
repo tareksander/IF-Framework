@@ -1,13 +1,21 @@
 <script lang="ts">
-    import { liveQuery } from "dexie";
-    import { engine } from "../engine";
+    import { Version, liveQuery } from "dexie";
     import { Readable, Writable, derived, get, writable } from "svelte/store";
-    import { Save, saveManager } from "../save";
-    import { onDestroy, onMount } from "svelte";
+    import { Save, saveManager } from "./save";
+    import { createEventDispatcher, onDestroy, onMount } from "svelte";
+    import { SaveDB } from "./savedb";
+    
+    export let saveDB: SaveDB;
+    export let version: number;
+    
+    const dispatch = createEventDispatcher<{
+        load: Save
+    }>();
     
     interface ExportedSave {
         data: string,
         title: string,
+        version: number,
     };
     
     interface Export {
@@ -16,9 +24,11 @@
     };
     
     let name = "";
-    let autosave = liveQuery(() => engine.saveDB.get(-1));
+    let autosave = liveQuery(() => saveDB.get(-1));
     let exported: Writable<Export|null> = writable(null);
     let width: number = Infinity;
+    
+    let imported: HTMLInputElement;
     
     onDestroy(() => {
         let e = get(exported);
@@ -28,7 +38,7 @@
         }
     });
     
-    let saves = derived(liveQuery(() => engine.saveDB.getSaves()) as unknown as Readable<Save[]>, (l) => {
+    let saves = derived(liveQuery(() => saveDB.getSaves()) as unknown as Readable<Save[]>, (l) => {
         if (l === undefined) return [];
         let saves: (Save|null)[] = [];
         for (let i = 0; i <= Math.max(10, ...l.map((e)=> e.slot)); i++) {
@@ -47,13 +57,14 @@
             name: name,
             date: new Date(),
             slot: -2,
+            version: version,
             data: saveManager.serializeData()
         };
     }
     
     function newSave() {
         if (name.length != 0) {
-            engine.saveDB.newSave(save());
+            saveDB.newSave(save());
         }
     }
     
@@ -61,21 +72,21 @@
         if (name.length != 0) {
             let s = save();
             s.slot = slot;
-            engine.saveDB.saves.put(s, slot);
+            saveDB.saves.put(s, slot);
         }
     }
     
     function deleteAt(slot: number) {
-        engine.saveDB.saves.delete(slot);
+        saveDB.saves.delete(slot);
     }
     
     async function loadFrom(slot: number) {
-        engine.loadSave((await engine.saveDB.get(slot))!);
+        dispatch("load", ((await saveDB.get(slot))!));
     }
     
     async function exportFrom(slot: number) {
-        let s = (await engine.saveDB.get(slot))!;
-        let b = new Blob([JSON.stringify({data: s.data, title: engine.saveDB.name})]);
+        let s = (await saveDB.get(slot))!;
+        let b = new Blob([JSON.stringify({data: s.data, version: s.version, title: saveDB.name})]);
         let e = get(exported);
         if (e != null) {
             URL.revokeObjectURL(e.URL);
@@ -86,7 +97,6 @@
         });
     }
     
-    let imported: HTMLInputElement;
     
     onMount(() => {
         imported.addEventListener("input", async () => {
@@ -100,14 +110,15 @@
                 } finally {
                     imported.value = "";
                 }
-                if (! Object.hasOwn(data, "title") || ! Object.hasOwn(data, "data") || typeof data.data !== "string" || data.title !== engine.saveDB.name) {
+                if (typeof data.data !== "string" || data.title !== saveDB.name || data.version !== version) {
                     return;
                 }
-                engine.loadSave({
+                dispatch("load", {
                     name: "",
                     date: new Date(),
                     data: data.data,
                     slot: 0,
+                    version: version,
                 });
             }
         });

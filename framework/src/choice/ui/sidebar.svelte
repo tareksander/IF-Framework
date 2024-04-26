@@ -2,12 +2,14 @@
     import { derived, get } from "svelte/store";
     import { engine } from "../engine";
     import { config } from "../config";
-    import SaveDialog from "./saveDialog.svelte";
+    import SaveDialog from "./saveDialogChoice.svelte";
     import { overlays } from "./main.svelte";
     export let components: any[];
     
     let backColor = derived([engine.history, config.userNavigable], ([h, n]) => (h.currentIndex >= h.moments.length - 1 || ! n) ? "var(--ui-secondary-color)" : "var(--ui-primary-color)");
     let forwardColor = derived([engine.history, config.userNavigable], ([h, n]) => (h.currentIndex == 0 || ! n) ? "var(--ui-secondary-color)" : "var(--ui-primary-color)");
+    let us = config.userSavable;
+    let title = engine.title;
     
     let back = () => {
         let h = get(engine.history);
@@ -25,13 +27,11 @@
         }
     };
     
-    let title = engine.title;
     
     function reset() {
         engine.reset();
     }
     
-    let us = config.userSavable;
     
     function saveDialog() {
         if (get(us)) {

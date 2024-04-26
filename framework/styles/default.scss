@@ -37,3 +37,10 @@ a {
 a:visited {
     color: var(--link-visited-color);
 }
+
+
+
+%iff-link {
+    text-decoration: underline;
+    cursor: pointer;
+}

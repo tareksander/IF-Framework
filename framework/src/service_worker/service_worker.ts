@@ -67,13 +67,36 @@ export function setupSW(sw: ServiceWorkerGlobalScope) {
     };
     
     const cacheFirst = async (request: Request) => {
-        const cached = await sw.caches.match(request, {
-            cacheName: cacheName
-        });
-        if (cached) {
-          return cached;
+        let c = await conf();
+        let url = new URL(request.url);
+        let cached;
+        if (c.slashIndex === true && url.pathname.endsWith("/")) {
+            url.pathname += "index.html";
+            cached = await sw.caches.match(url, {
+                cacheName: cacheName
+            });
+        } else {
+            cached = await sw.caches.match(request, {
+                cacheName: cacheName
+            });
         }
-        return fetch(request);
+        let res: Response;
+        if (cached) {
+            res =  cached;
+        } else {
+            res = await fetch(request);
+        }
+        if (c.isolated === true) {
+            let h = new Headers(res.headers);
+            h.set("Cross-Origin-Opener-Policy", "same-origin");
+            h.set("Cross-Origin-Embedder-Policy", "require-corp");
+            return new Response(res.body, {
+                headers: h,
+                status: res.status,
+                statusText: res.statusText
+            });
+        }
+        return res;
       };
     
     sw.addEventListener("fetch", (event) => {

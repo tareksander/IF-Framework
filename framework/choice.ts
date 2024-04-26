@@ -12,7 +12,7 @@ export * from "./src/choice/ui/dialog";
 
 export { default as Main } from "./src/choice/ui/main.svelte";
 export { default as Sidebar } from "./src/choice/ui/sidebar.svelte";
-export { default as SaveDialog } from "./src/choice/ui/saveDialog.svelte";
+export { default as SaveDialog } from "./src/choice/ui/saveDialogChoice.svelte";
 export { default as Link } from "./src/choice/elements/link.svelte";
 
 // @ts-ignore

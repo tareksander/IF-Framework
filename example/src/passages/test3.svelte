@@ -1,7 +1,3 @@
-<script lang="ts" context="module">
-    export const meta = {};
-    export const tags = [];
-</script>
 <script lang="ts">
     import { Link, engine } from "@if-framework/framework/choice";
     import { globals } from "../globals";

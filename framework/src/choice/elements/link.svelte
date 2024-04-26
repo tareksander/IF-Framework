@@ -3,7 +3,8 @@
     import { config } from "../config";
     import { engine } from "../engine";
     export let passage:string;
-    export let visited: boolean|undefined;
+    export let visited: boolean | undefined;
+    export let noHref: boolean | undefined;
     
     let click = (e: Event) => {
         e.preventDefault();
@@ -14,6 +15,7 @@
     };
     
     let href = () => {
+        if (noHref || config.visitedLinks == "save") return undefined;
         let u = new URL(window.location.toString());
         u.hash = passage;
         return u.toString();
@@ -35,11 +37,16 @@
     }
 </script>
 
-<a on:click={click} href="{href()}" class={classes()}>
+<a on:click={click} href="{href()}" class="{classes()} common">
     <slot style="color: inherit"></slot>
 </a>
 
 <style lang="css">
+    .common {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+    
     .a {
         color: var(--link-color);
     }

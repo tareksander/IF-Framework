@@ -18,6 +18,11 @@ export interface Save {
      * The save data, a JSON string.
      */
     data: string,
+    /**
+     * The save version of your game, you should increment this when you change the shape of the data that is included in saves,
+     * e.g. add {@link SaveCallbacks} or change the type of global or local variables.
+     */
+    version: number,
 }
 
 
@@ -61,6 +66,9 @@ export function serialize(v: any, hooks: Map<any, [string, (data: any) => object
         case 'undefined':
             return undefined;
         case 'object':
+            if (v === null) {
+                return null;
+            }
             if (v instanceof Array) {
                 return v.map((v): any => serialize(v, hooks));
             } else if (v instanceof Map) {
@@ -100,6 +108,9 @@ export function deserialize(v: any, hooks: Map<string, (data: any) => any> = sav
         case 'boolean':
             return v;
         case 'object':
+            if (v === null) {
+                return null;
+            }
             if (v instanceof Array) {
                 return v.map((v) => deserialize(v, hooks));
             }
@@ -135,11 +146,11 @@ export class SaveManager {
     /**
      * Hooks used while serializing.
      */
-    public serializeHooks: Map<any, [string, (data: object) => object]> = new Map();
+    public serializeHooks: Map<any, [string, (data: object) => any]> = new Map();
     /**
      * Hooks used while deserializing.
      */
-    public deserializeHooks: Map<string, (data: object) => any> = new Map();
+    public deserializeHooks: Map<string, (data: any) => any> = new Map();
     
     private constructor() {}
     

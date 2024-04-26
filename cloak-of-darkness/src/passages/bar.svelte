@@ -1,31 +1,37 @@
-<script lang="ts" context="module">
-    export const meta = {};
-    export const tags = [];
-</script>
 <script lang="ts">
     import { Link, engine } from "@if-framework/framework/choice";
     import { globals, room } from "../globals";
     
+    /**
+     * "Darkness index": Which stage of tripping around in the dark you are.
+     */
     let di = 0;
     
     let g = globals();
+    // The room description is different if you have the cloak on vs off.
     if (g.hasCloak) {
         room("Darkness");
     } else {
         room("Bar");
     }
     
+    /**
+     * Proceeds to the next stage of "tripping around in the dark".
+     */
     function nextD() {
         di += 1;
     }
     
+    /**
+     * Returns to the foyer.
+     */
     function foyer() {
         engine.goTo(engine.passage("foyer")!);
     }
 </script>
 
 {#if g.hasCloak}
-    <p>
+    <p><!-- List the displayed text for the different `di`'s' -->
         {#if di == 0}
             You can't see a thing! Not even the door you entered by--was it <a on:click={foyer}>north</a>,
             <a on:click={nextD}>south</a>, <a on:click={nextD}>east</a> or <a on:click={nextD}>west</a>?
@@ -51,7 +57,4 @@
 {/if}
 
 <style lang="css">
-    a {
-        color: var(--link-color);
-    }
 </style>

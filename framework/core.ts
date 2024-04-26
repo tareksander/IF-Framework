@@ -7,5 +7,7 @@
 
 
 export { Updater } from "./src/common/update";
-export * from "./src/choice/save";
-export * from "./src/choice/savedb";
+export * from "./src/common/save";
+export * from "./src/common/savedb";
+export * from "./src/common/rand";
+export * from "./src/common/theme";

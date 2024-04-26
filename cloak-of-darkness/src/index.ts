@@ -9,7 +9,10 @@ import Header from "./header.svelte";
 
 
 let init = () => {
+    // The history is used on the background to navigate back from the cloak examination passage.
+    // More history isn't needed here, so we set the limit to 2.
     config.historyLimit = 2;
+    // Make sure the user can't navigate the history - otherwise escaping the dark room would be trivial.
     config.userNavigable.set(false);
     
     // Add the generated passages to the engine.
@@ -19,7 +22,7 @@ let init = () => {
     // Set the starting point with an initial history.
     // This creates a new History with the current Moment at index 0 and a Moment list with only
     // one Moment at the "test" passage and with empty local variables.
-    engine.initHistory(new History([new Moment("start", {})], 0));
+    engine.init(new History([new Moment("start", {})], 0), 0);
     
     
     // Define the custom elements used in Markdown passages.
@@ -34,7 +37,7 @@ let init = () => {
         props: {
             // Additional components to be displayed in the sidebar can be added here. A Svelte component constructor is expected.
             sidebarComponents: [],
-            // Header and footer components can be added, too.
+            // Add your custom header component here, that displays the current location.
             header: Header,
             footer: null,
         }

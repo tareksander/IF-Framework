@@ -28,7 +28,7 @@ let init = () => {
     // Set the starting point with an initial history.
     // This creates a new History with the current Moment at index 0 and a Moment list with only
     // one Moment at the "test" passage and with empty local variables.
-    engine.initHistory(new History([new Moment("test", {})], 0));
+    engine.init(new History([new Moment("test", {})], 0), 0);
     
     // Define the custom elements used in Markdown passages.
     define();

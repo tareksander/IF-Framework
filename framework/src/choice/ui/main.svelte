@@ -12,7 +12,7 @@
     import Update from "./update.svelte";
     import Sidebar from "./sidebar.svelte";
     import { Writable, get, writable } from "svelte/store";
-    import SaveDialog from "./saveDialog.svelte";
+    import SaveDialog from "./saveDialogChoice.svelte";
     import { Dialog } from "./dialog";
     import { onMount } from "svelte";
     import { config } from "../config";
@@ -41,6 +41,16 @@
     const loading = engine.loading;
     const passageClass = writable("passage-visible");
     const displayedPassage = writable(get(currentPassage));
+    
+    let spinner1: HTMLElement;
+    let spinner2: HTMLElement;
+    let spinner3: HTMLElement;
+    
+    let spinnerVisible = false;
+    let passageHeight: number;
+    let sidebarHeight: number;
+    let sidebar: HTMLElement;
+    let scrollY: number;
     
     function keyDown(e: KeyboardEvent) {
         if (e.ctrlKey && e.key.toLowerCase() == "s") {
@@ -77,32 +87,31 @@
         });
     }
     
-    let spinner1: HTMLElement;
-    let spinner2: HTMLElement;
-    let spinner3: HTMLElement;
-    
     onMount(() => {
         let token: number|null = null;
         let lastframe: number|null = null;
         let progress = 0;
+        function rotate([x, y]: [number, number], a: number) {
+            let nx =  x * Math.cos(a) - y * Math.sin(a);
+            let ny = x * Math.sin(a) + y * Math.cos(a);
+            return [nx, ny];
+        }
+        function rotateElement(p: [number, number], a: number, e: HTMLElement) {
+            let [nx, ny] = rotate(p, a);
+            e.style.cssText = `top: calc(50vh + ${ny}px); left: calc(50vw + ${nx}px);`;
+        }
+        function deg2rad(d: number) {
+            return d * Math.PI / 180;
+        }
+        rotateElement([0, -50], 0, spinner1);
+        rotateElement([0, -50], deg2rad(120), spinner2);
+        rotateElement([0, -50], deg2rad(240), spinner3);
         let callback: FrameRequestCallback;
         callback = (t) => {
-            function rotate([x, y]: [number, number], a: number) {
-                let nx =  x * Math.cos(a) - y * Math.sin(a);
-                let ny = x * Math.sin(a) + y * Math.cos(a);
-                return [nx, ny];
-            }
-            function rotateElement(p: [number, number], a: number, e: HTMLElement) {
-                let [nx, ny] = rotate(p, a);
-                e.style.cssText = `top: calc(50vh + ${ny}px); left: calc(50vw + ${nx}px);`;
-            }
-            function deg2rad(d: number) {
-                return d * Math.PI / 180;
-            }
             if (lastframe != null) {
                 let delta = t - lastframe;
                 progress += delta / 10;
-                progress %= 100;
+                progress %= 70;
                 let a;
                 if (progress < 50) {
                     a = progress / 50 * deg2rad(120);
@@ -113,6 +122,9 @@
                 rotateElement([0, -50], a + deg2rad(120), spinner2);
                 rotateElement([0, -50], a + deg2rad(240), spinner3);
             }
+            if (! spinnerVisible) {
+                spinnerVisible = true;
+            }
             lastframe = t;
             token = requestAnimationFrame(callback);
         };
@@ -122,19 +134,22 @@
             } else {
                 if (token != null) {
                     cancelAnimationFrame(token);
-                    token = null;
-                    lastframe = null;
-                    progress = 0;
                 }
+                token = null;
+                lastframe = null;
+                progress = 0;
+                spinnerVisible = false;
+                setTimeout(() => {
+                    if (! get(loading)) {
+                        rotateElement([0, -50], 0, spinner1);
+                        rotateElement([0, -50], deg2rad(120), spinner2);
+                        rotateElement([0, -50], deg2rad(240), spinner3);
+                    }
+                }, 0);
             }
         });
     })
     
-    
-    let passageHeight: number;
-    let sidebarHeight: number;
-    let sidebar: HTMLElement;
-    let scrollY: number;
     
     $: if (sidebar != undefined && passageHeight > sidebarHeight) sidebar.style.height = passageHeight + "px";
     $: if (sidebar != undefined && sidebarHeight > passageHeight && sidebarHeight > window.innerHeight) sidebar.style.height = "100%";
@@ -142,13 +157,13 @@
 
 <svelte:window on:keydown={keyDown} bind:scrollY={scrollY}/>
 
-<div class="content" style="width: 100%; align-items: center; justify-content: center; { $loading ? "display: flex;" : "display: none;"}">
+<div class="content" style="width: 100%; align-items: center; justify-content: center; { spinnerVisible ? "display: flex;" : "display: none;"}">
     <div bind:this={spinner1} class="spinner" aria-label="Loading spinner"></div>
     <div bind:this={spinner2} class="spinner"></div>
     <div bind:this={spinner3} class="spinner"></div>
 </div>
 {#if ! $loading}
-    <div class="content">
+    <div class="content" in:fade|global={{duration: 200}}>
         <div style="flex: 1;" bind:this={sidebar} bind:offsetHeight={sidebarHeight}>
             <Sidebar components={sidebarComponents}/>
         </div>
@@ -161,7 +176,7 @@
                 <svelte:component this={$currentPassage.component}/>
             </div>
             {:else}
-            <div style="transition: opacity {transitionDuration}ms;" class="passage {$passageClass}">
+            <div style="transition: opacity {transitionDuration}ms;" class="passage {$passageClass} iff-passage">
                 <svelte:component this={$displayedPassage.component}/>
             </div>
             {/if}

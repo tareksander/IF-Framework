@@ -1,5 +1,11 @@
+// Include the framework's styles
 @use "@if-framework/framework/styles/default.scss";
 
 @use "@if-framework/framework/styles/default-font.scss" with (
     $fonts: "Sedan"
 );
+
+// Apply link styling to all links in passages, so they look and behave as if they had an href attribute.
+.iff-passage a {
+    @extend %iff-link
+}

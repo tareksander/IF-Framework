@@ -6,6 +6,8 @@
 export interface SWConfig {
     cacheFiles: string[],
     version: number,
+    isolated?: boolean,
+    slashIndex?: boolean,
 }
 
 /**
