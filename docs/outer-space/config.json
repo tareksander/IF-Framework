@@ -1,0 +1,12 @@
+{
+    "version": 4,
+    "cacheFiles": [
+        "index.html",
+        "index.js",
+        "index.css",
+        "icon-256x256.png",
+        "manifest.json",
+        "fonts/Sedan-Italic.ttf",
+        "fonts/Sedan-Regular.ttf"
+    ]
+}
