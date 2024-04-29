@@ -39,8 +39,8 @@
     const currentPassage = engine.currentPassage;
     const upd = updater.updateAvailable;
     const loading = engine.loading;
-    const passageClass = writable("passage-visible");
     const displayedPassage = writable(get(currentPassage));
+    const displayPassage = writable(true);
     
     let spinner1: HTMLElement;
     let spinner2: HTMLElement;
@@ -68,23 +68,22 @@
         }
     }
     
-    //engine.loading.set(true);
-    
     function dismissDialog() {
         overlays.set([...(get(overlays).slice(0, -1))]);
     }
     if (transitionDuration != 0) {
         onMount(() => {
             return currentPassage.subscribe(() => {
-                if (get(passageClass) === "passage-visible") {
-                    passageClass.set("passage-invisible");
-                    setTimeout(() => {
-                        displayedPassage.set(get(currentPassage));
-                        passageClass.set("passage-visible");
-                    }, transitionDuration);
+                if (get(displayPassage)) {
+                    displayPassage.set(false);
                 }
             });
         });
+    }
+    
+    function passageOutFinish() {
+        displayPassage.set(true);
+        displayedPassage.set(get(currentPassage));
     }
     
     onMount(() => {
@@ -176,9 +175,11 @@
                 <svelte:component this={$currentPassage.component}/>
             </div>
             {:else}
-            <div style="transition: opacity {transitionDuration}ms;" class="passage {$passageClass} iff-passage">
-                <svelte:component this={$displayedPassage.component}/>
-            </div>
+            {#if $displayPassage}
+                <div on:outroend={passageOutFinish} transition:fade={{duration: transitionDuration}} class="passage iff-passage">
+                    <svelte:component this={$displayedPassage.component}/>
+                </div>
+            {/if}
             {/if}
             {#if footer}
                 <svelte:component this={footer}/>
@@ -243,14 +244,6 @@
         padding: 1em;
         box-sizing: border-box;
         flex: 10;
-    }
-    
-    .passage-visible {
-        opacity: 1;
-    }
-    
-    .passage-invisible {
-        opacity: 0;
     }
     
     .main {
