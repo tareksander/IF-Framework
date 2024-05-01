@@ -7,6 +7,7 @@
     export let noHref: boolean | undefined;
     
     let click = (e: Event) => {
+        if (e instanceof KeyboardEvent && e.key == "Tab") return;
         e.preventDefault();
         if (config.visitedLinks == "browser") {
             history.replaceState(null, "", href())
@@ -37,7 +38,7 @@
     }
 </script>
 
-<a on:click={click} href="{href()}" class="{classes()} common">
+<a tabindex="0" on:keydown={click} on:click={click} href="{href()}" class="{classes()} common">
     <slot style="color: inherit"></slot>
 </a>
 

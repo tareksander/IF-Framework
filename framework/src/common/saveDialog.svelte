@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Version, liveQuery } from "dexie";
+    import { liveQuery } from "dexie";
     import { Readable, Writable, derived, get, writable } from "svelte/store";
     import { Save, saveManager } from "./save";
     import { createEventDispatcher, onDestroy, onMount } from "svelte";

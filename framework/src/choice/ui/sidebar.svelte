@@ -6,12 +6,12 @@
     import { overlays } from "./main.svelte";
     export let components: any[];
     
-    let backColor = derived([engine.history, config.userNavigable], ([h, n]) => (h.currentIndex >= h.moments.length - 1 || ! n) ? "var(--ui-secondary-color)" : "var(--ui-primary-color)");
-    let forwardColor = derived([engine.history, config.userNavigable], ([h, n]) => (h.currentIndex == 0 || ! n) ? "var(--ui-secondary-color)" : "var(--ui-primary-color)");
+    let back= derived([engine.history, config.userNavigable], ([h, n]) => (h.currentIndex >= h.moments.length - 1 || ! n));
+    let forward = derived([engine.history, config.userNavigable], ([h, n]) => (h.currentIndex == 0 || ! n));
     let us = config.userSavable;
     let title = engine.title;
     
-    let back = () => {
+    let goBack = () => {
         let h = get(engine.history);
         if (h.currentIndex < h.moments.length - 1 && get(config.userNavigable)) {
             h.currentIndex += 1;
@@ -19,7 +19,7 @@
         }
     };
     
-    let forward = () => {
+    let goForward = () => {
         let h = get(engine.history);
         if (h.currentIndex > 0 && get(config.userNavigable)) {
             h.currentIndex -= 1;
@@ -48,34 +48,34 @@
         {$title}
     </h2>
     <div>
-        <a on:click={back} style="border: 2px solid {$backColor}; border-right-width: 1px}; border-top-width: 1px; color: {$backColor}">←</a><a on:click={forward} style="border: 2px solid {$forwardColor}; border-left-width: 1px; border-top-width: 1px; color: {$forwardColor}">→</a>
+        <button on:click={goBack} disabled={$back} style="width: unset; display: inline;">←</button><button on:click={goForward} disabled={$forward} style="width: unset; display: inline; border-right-width: 1px;">→</button>
     </div>
-    <a class="button {$us ? "" : "disabled"}" on:click={saveDialog}>Save/Load</a>
+    <button disabled={! $us} on:click={saveDialog}>Save/Load</button>
     {#each components as c}
         <svelte:component this={c}/>
     {/each}
-    <a class="button" on:click={reset}>Reset</a>
+    <button on:click={reset}>Reset</button>
 </div>
 
 <style lang="css">
-    .button {
-        display: block;
-        color: inherit;
-        border: 2px solid var(--ui-primary-color);
-        border-right-width: 0px;
-        border-top-width: 1px;
-    }
     
-    .disabled {
+    button:disabled {
         border-color: var(--ui-secondary-color);
         color: var(--ui-secondary-color);
     }
     
-    a {
+    button {
         padding: 0.5em;
         align-content: center;
-        display: inline-block;
+        display: block;
         user-select: none;
         font-size: 1.5rem;
+        display: block;
+        color: inherit;
+        border: 2px solid var(--ui-primary-color);
+        background-color: inherit;
+        border-right-width: 0px;
+        border-top-width: 1px;
+        width: 100%;
     }
-</style>
+    </style>

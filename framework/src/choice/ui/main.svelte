@@ -16,6 +16,7 @@
     import { Dialog } from "./dialog";
     import { onMount } from "svelte";
     import { config } from "../config";
+    import { focusTrap } from "./focusAction";
     
     /**
      * Optional array of Svelte component constructors to include in the sidebar.
@@ -53,14 +54,28 @@
     let scrollY: number;
     
     function keyDown(e: KeyboardEvent) {
-        if (e.ctrlKey && e.key.toLowerCase() == "s") {
-            e.preventDefault();
-            if (get(config.userSavable)) {
-                if (! get(overlays).find((o) => o.component === SaveDialog)) {
-                    overlays.set([...get(overlays), { component: SaveDialog, dismissible: true}]);
-                } else {
-                    overlays.set(get(overlays).filter((e) => e.component !== SaveDialog));
+        if (e.ctrlKey) {
+            if (e.key.toLowerCase() == "s") {
+                e.preventDefault();
+                if (get(config.userSavable)) {
+                    if (! get(overlays).find((o) => o.component === SaveDialog)) {
+                        overlays.set([...get(overlays), { component: SaveDialog, dismissible: true}]);
+                    } else {
+                        overlays.set(get(overlays).filter((e) => e.component !== SaveDialog));
+                    }
                 }
+            }
+            if (e.key == "ArrowLeft" || e.key == "Left") {
+                e.preventDefault();
+                goBack();
+            }
+            if (e.key == "ArrowRight" || e.key == "Right") {
+                e.preventDefault();
+                goForward();
+            }
+            if (e.shiftKey && e.key.toLowerCase() == "r") {
+                e.preventDefault();
+                engine.reset();
             }
         }
         if (e.key === "Escape" && get(overlays).length != 0) {
@@ -76,6 +91,14 @@
             return currentPassage.subscribe(() => {
                 if (get(displayPassage)) {
                     displayPassage.set(false);
+                }
+            });
+        });
+        onMount(() => {
+            return loading.subscribe((l) => {
+                if (l == false) {
+                    displayPassage.set(true);
+                    displayedPassage.set(get(currentPassage));
                 }
             });
         });
@@ -149,6 +172,21 @@
         });
     })
     
+    let goBack = () => {
+        let h = get(engine.history);
+        if (h.currentIndex < h.moments.length - 1 && get(config.userNavigable)) {
+            h.currentIndex += 1;
+            engine.history.set(h);
+        }
+    };
+    
+    let goForward = () => {
+        let h = get(engine.history);
+        if (h.currentIndex > 0 && get(config.userNavigable)) {
+            h.currentIndex -= 1;
+            engine.history.set(h);
+        }
+    };
     
     $: if (sidebar != undefined && passageHeight > sidebarHeight) sidebar.style.height = passageHeight + "px";
     $: if (sidebar != undefined && sidebarHeight > passageHeight && sidebarHeight > window.innerHeight) sidebar.style.height = "100%";
@@ -163,9 +201,9 @@
 </div>
 {#if ! $loading}
     <div class="content" in:fade|global={{duration: 200}}>
-        <div style="flex: 1;" bind:this={sidebar} bind:offsetHeight={sidebarHeight}>
+        <nav style="flex: 1;" bind:this={sidebar} bind:offsetHeight={sidebarHeight}>
             <Sidebar components={sidebarComponents}/>
-        </div>
+        </nav>
         <div class="main" bind:offsetHeight={passageHeight}>
             {#if header}
                 <svelte:component this={header}/>
@@ -176,9 +214,9 @@
             </div>
             {:else}
             {#if $displayPassage}
-                <div on:outroend={passageOutFinish} transition:fade={{duration: transitionDuration}} class="passage iff-passage">
+                <main on:outroend={passageOutFinish} transition:fade={{duration: transitionDuration}} class="passage iff-passage">
                     <svelte:component this={$displayedPassage.component}/>
-                </div>
+                </main>
             {/if}
             {/if}
             {#if footer}
@@ -195,7 +233,7 @@
 {#if $overlays.length != 0}
     {#each $overlays as o (o)}
         <div class="overlayBackground" style="top: {scrollY}px" on:click|self={dismissDialog} transition:fade|global={{duration: 100}}>
-            <div class="overlayContainer">
+            <div class="overlayContainer" use:focusTrap>
                 <svelte:component this={o.component}/>
             </div>
         </div>

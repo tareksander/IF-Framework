@@ -98,7 +98,7 @@ export class Engine {
      * history list for the current {@link Moment}.
      */
     public readonly history = writable(new History([], 0));
-    private initialHistory: History|undefined;
+    private initialHistory: string|undefined;
     
     /**
      * Callbacks to be called on engine reset.
@@ -215,10 +215,10 @@ export class Engine {
             url.hash = "";
             history.replaceState(null, "", url.toString());
         }
-        this.history.set(structuredClone(this.initialHistory!));
         this.deleteGlobals();
         this.visitedPassages.set([]);
         sessionStorage.removeItem(this.staticTitle + " save");
+        this.history.set(deserialize(JSON.parse(this.initialHistory!), saveManager.deserializeHooks));
         if (this.onReset) {
             for (let r of this.onReset) {
                 try {
@@ -324,7 +324,7 @@ export class Engine {
      */
     public init(h: History, version: number) {
         this.version = version;
-        this.initialHistory = structuredClone(h);
+        this.initialHistory = JSON.stringify(serialize(h, saveManager.serializeHooks));
         this.history.subscribe((h) => {
             if (h.currentIndex >= h.moments.length) return;
             let p = h.moments[h.currentIndex].passage;
