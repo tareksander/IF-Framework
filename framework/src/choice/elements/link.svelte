@@ -7,7 +7,9 @@
     export let noHref: boolean | undefined;
     
     let click = (e: Event) => {
-        if (e instanceof KeyboardEvent && e.key == "Tab") return;
+        if (e instanceof KeyboardEvent) {
+            if (e.key != " " && e.key != "Enter") return;
+        }
         e.preventDefault();
         if (config.visitedLinks == "browser") {
             history.replaceState(null, "", href())

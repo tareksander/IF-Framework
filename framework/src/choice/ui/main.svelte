@@ -56,6 +56,7 @@
     function keyDown(e: KeyboardEvent) {
         if (e.ctrlKey) {
             if (e.key.toLowerCase() == "s") {
+                e.stopPropagation();
                 e.preventDefault();
                 if (get(config.userSavable)) {
                     if (! get(overlays).find((o) => o.component === SaveDialog)) {
@@ -66,14 +67,17 @@
                 }
             }
             if (e.key == "ArrowLeft" || e.key == "Left") {
+                e.stopPropagation();
                 e.preventDefault();
                 goBack();
             }
             if (e.key == "ArrowRight" || e.key == "Right") {
+                e.stopPropagation();
                 e.preventDefault();
                 goForward();
             }
             if (e.shiftKey && e.key.toLowerCase() == "r") {
+                e.stopPropagation();
                 e.preventDefault();
                 engine.reset();
             }
@@ -192,7 +196,7 @@
     $: if (sidebar != undefined && sidebarHeight > passageHeight && sidebarHeight > window.innerHeight) sidebar.style.height = "100%";
 </script>
 
-<svelte:window on:keydown={keyDown} bind:scrollY={scrollY}/>
+<svelte:window on:keydown|capture={keyDown} bind:scrollY={scrollY}/>
 
 <div class="content" style="width: 100%; align-items: center; justify-content: center; { spinnerVisible ? "display: flex;" : "display: none;"}">
     <div bind:this={spinner1} class="spinner" aria-label="Loading spinner"></div>
